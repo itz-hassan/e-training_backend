@@ -2,7 +2,7 @@
   "name": "e-training",
   "version": "1.0.0",
   "description": "e-learning app/portal for ehorecon",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "server",
     "server": "nodemon server.js"

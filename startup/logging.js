@@ -7,9 +7,19 @@ const logger = winston.createLogger({
   transports: [
     new winston.transports.File({ filename: "error.log", level: "error" }),
   ],
-  exceptionHandlers: [new winston.transports.File({ filename: "error.log" })],
+  exceptionHandlers: [
+    new winston.transports.File({ filename: "error.log" }),
+    new winston.transports.Console({
+      color: true,
+      prettyPrint: true,
+    }),
+  ],
   rejectionHandlers: [
     new winston.transports.File({ filename: "rejections.log" }),
+    new winston.transports.Console({
+      color: true,
+      prettyPrint: true,
+    }),
   ],
 });
 
