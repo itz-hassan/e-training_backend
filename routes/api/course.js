@@ -3,7 +3,7 @@ let express = require("express");
 let router = express.Router();
 
 // add new record
-router.post("/add/", (req, res) => {
+router.post("/", (req, res) => {
   // validating if there is req.body
   if (!req.body) {
     return res.status(400).json("request body is missing");

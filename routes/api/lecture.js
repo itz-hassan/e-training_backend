@@ -6,7 +6,7 @@ const CourseModel = require("../../models/courses.model");
 const LectureModel = require("../../models/lectures.model");
 
 /*Get videos*/
-router.get("/lectures", function (req, res) {
+router.get("/", function (req, res) {
   LectureModel.find({
     course: req.query.id,
   })
@@ -25,7 +25,7 @@ router.get("/lectures", function (req, res) {
 });
 
 /* POST lectures or sections or modules etc*/
-router.post("/lectures/localupload", function (req, res) {
+router.post("/localupload", function (req, res) {
   const newLecture = new LectureModel({
     title: req.body.title,
     videoLink: req.body.videoLink,
@@ -62,7 +62,7 @@ router.post("/lectures/localupload", function (req, res) {
     });
 });
 
-router.post("/lectures/youtubeupload", (req, res) => {
+router.post("/youtubeupload", (req, res) => {
   //req.body
   if (!req.body) {
     return res.status(400).send("request body is missing");

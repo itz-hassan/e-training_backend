@@ -1,64 +1,10 @@
 const express = require("express");
-const mongoose = require("mongoose");
-const bodyParser = require("body-parser");
-// const passport = require("passport");
-
-// routes
-const users = require("./routes/api/users");
-const course = require("./routes/api/course");
-const category = require("./routes/api/category");
-const enroll = require("./routes/api/enrollRoute");
-const role = require("./routes/api/role");
-const lecture = require("./routes/api/lecture");
-const profile = require("./routes/api/profile");
-
-const fileUpload = require("express-fileupload");
-
-// var multer = require("multer");
-var cors = require("cors");
-
+const logger = require("./startup/logging");
 const app = express();
 
-// Db Config
-// const db = require("./config/keys").mongoURI;
-
-//Passport middileware
-// passport.use(passport.initialize());
-
-//passport config will in
-// require("./config/passport")(passport);
-app.use(fileUpload());
-
-//Body Parser
-app.use(
-  bodyParser.urlencoded({ limit: "50mb", extended: true, parameterLimit: 1000000 })
-);
-app.use(bodyParser.json({ limit: "50mb", extended: true }));
-
-//Use routes
-app.use(cors());
-app.options("*", cors());
-app.use(users);
-app.use("/courses", course);
-app.use(category);
-app.use(lecture);
-app.use(enroll);
-app.use(role);
-app.use("/api/profile", profile);
+require("./startup/routes")(app);
+require("./startup/db")();
 
 const port = process.env.PORT || 5000;
 
-//Connect to mongodb through mongoose
-const uri = "mongodb://localhost/e_learning";
-mongoose
-  .connect(
-    uri,
-    () => console.log("MongoDB database connection established successfully")
-    // { autoIndex: false }
-  )
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.log(err));
-
-app.get("/", (req, res) => res.send("Hello World"));
-
-app.listen(port, () => console.log(`Server running on Port ${port}`));
+app.listen(port, () => logger.info(`Server running on Port ${port}`));
