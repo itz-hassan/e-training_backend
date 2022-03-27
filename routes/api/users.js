@@ -27,6 +27,7 @@ router.post("/", async (req, res) => {
     levelOfEduc: req.body.levelOfEduc,
     phone: req.body.phone,
     dob: req.body.dob,
+    name: `${req.body.last_name} ${req.body.first_name}`,
     address: req.body.address,
     registration: req.body.registration,
   });
@@ -36,7 +37,7 @@ router.post("/", async (req, res) => {
 
   await newUser.save();
   const token = newUser.generateAuthToken();
-  res.header("x-auth-token", token).send(token);
+  res.header("x-auth-token", token).send({ token });
 });
 
 // @route  GET   api/users/login

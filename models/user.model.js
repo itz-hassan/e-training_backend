@@ -33,6 +33,7 @@ const userSchema = new mongoose.Schema({
     minLength: 3,
     maxLength: 50,
   },
+  name: { type: String },
   levelOfEduc: {
     type: String,
     enum: ["Diploma", "BSc", "Post Grad"],
@@ -64,12 +65,6 @@ userSchema.methods.generateAuthToken = function () {
   const token = jwt.sign(
     {
       _id: this._id,
-      name: `${this.last_name} ${this.first_name}`,
-      role: this.role,
-      address: this.address,
-      registration: this.registration,
-      phone: this.phone,
-      email: this.email,
     },
     config.get("jwtPrivateKey"),
     { expiresIn: "2h" }
