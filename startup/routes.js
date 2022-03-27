@@ -5,7 +5,9 @@ const course = require("../routes/api/course");
 const category = require("../routes/api/category");
 const enroll = require("../routes/api/enrollRoute");
 const lecture = require("../routes/api/lecture");
+const user = require("../routes/api/users");
 const fileUpload = require("express-fileupload");
+const auth = require("../routes/api/auth");
 
 module.exports = function (app) {
   app.use(fileUpload());
@@ -16,6 +18,8 @@ module.exports = function (app) {
   app.use("/api/categories", category);
   app.use("/api/lectures", lecture);
   app.use("/api/enroll", enroll);
+  app.use("/api/users", user);
+  app.use("/api/auth", auth);
 
   // error handler
   app.use(error);
