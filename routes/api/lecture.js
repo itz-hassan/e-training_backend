@@ -4,6 +4,7 @@ const CourseModel = require("../../models/courses.model");
 // const fileUpload = require('express-fileupload');
 //mongoose
 const LectureModel = require("../../models/lectures.model");
+const logger = require("../../startup/logging");
 
 /*Get videos*/
 router.get("/", function (req, res) {
@@ -57,8 +58,16 @@ router.post("/localupload", function (req, res) {
     .save()
     .then((doc) => res.status(200).json(doc))
     .catch((err) => {
-      console.log(err);
-      res.status(500).json(err);
+      res.status(400).json(err);
+    });
+});
+
+router.get("/count/:id", (req, res) => {
+  LectureModel.findOne({ course: req.params.id })
+    .count()
+    .then((no) => res.json(no))
+    .catch((err) => {
+      res.status(400).json("invalid course id");
     });
 });
 

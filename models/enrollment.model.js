@@ -12,10 +12,10 @@ const EnrollmentSchema = new Schema(
     course: { type: Schema.Types.ObjectId, ref: "Course" },
     assignments: { type: Object, required: true }, // due date, title, description, additional files
     quizes: { type: Object, required: true }, //
-    grading: { type: Object, ref: "Course" }, // for all the grading
-    progress: { type: Object, ref: "Course" }, // for the students progress
-    certification: { type: Object, ref: "Course" }, // for the students certification
-    licence: { type: Object, ref: "Course" }, // for the students licence
+    grading: { type: Object }, // for all the grading
+    progress: { type: Object }, // for the students progress
+    certification: { type: Object }, // for the students certification
+    licence: { type: Object }, // for the students licence
     approved: {
       type: Boolean,
       default: true,
