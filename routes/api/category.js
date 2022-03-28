@@ -22,7 +22,7 @@ router.post("/", (req, res) => {
     });
 });
 
-router.get("/category", (req, res) => {
+router.get("/", (req, res) => {
   catmodel
     .find()
     .then((doc) => {
