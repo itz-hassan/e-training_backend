@@ -14,7 +14,7 @@ const CourseSchema = new Schema(
     },
     courseImage: {
       type: String,
-      required: false,
+      required: true,
     },
     courseDescription: { type: String, required: true },
     courseStartDate: { type: Date, required: true }, // duratoin
@@ -29,7 +29,7 @@ const CourseSchema = new Schema(
     liveSessions: { type: Array, required: false }, // office hours
     tags: [String], //tags for filter regarding courses with associations
     instructor: { type: Schema.Types.ObjectId, ref: "User" },
-    category: { type: Schema.Types.String, ref: "Category" },
+    category: { type: Schema.Types.ObjectId, ref: "Category" },
 
     capturedBy: { type: Schema.Types.ObjectId, ref: "User" },
     modifiedBy: { type: Array },

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
 const jwt = require("jsonwebtoken");
-const config = require("config");
+require("dotenv").config();
 
 const studeSchema = new mongoose.Schema({
   startDate: {
@@ -66,7 +66,7 @@ userSchema.methods.generateAuthToken = function () {
     {
       _id: this._id,
     },
-    config.get("jwtPrivateKey"),
+    process.env.jwtPrivateKey,
     { expiresIn: "2h" }
   );
   return token;

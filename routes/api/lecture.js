@@ -26,7 +26,7 @@ router.get("/", function (req, res) {
 });
 
 /* POST lectures or sections or modules etc*/
-router.post("/localupload", function (req, res) {
+router.post("/lectureUpload", function (req, res) {
   const newLecture = new LectureModel({
     title: req.body.title,
     videoLink: req.body.videoLink,
