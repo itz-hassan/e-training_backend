@@ -14,7 +14,7 @@ const CourseSchema = new Schema(
     },
     courseImage: {
       type: String,
-      required: false,
+      required: true,
     },
     courseDescription: { type: String, required: true },
     courseStartDate: { type: Date, required: true }, // duratoin

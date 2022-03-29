@@ -5,6 +5,7 @@ const app = express();
 require("./startup/routes")(app);
 require("./startup/db")();
 require("./startup/validation");
+require("./startup/config")();
 
 const port = process.env.PORT || 5000;
 
