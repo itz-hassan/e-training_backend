@@ -8,12 +8,7 @@ const logger = require("../../startup/logging");
 // add new course
 router.post("/", async (req, res) => {
   // validating if there is req.body
-<<<<<<< HEAD
-
-  if (!req.body) {
-=======
   if (!req.body && req.files) {
->>>>>>> 4def66e4c5b6ff4d93145b6f847b949acfc7ec13
     return res.status(400).json("request body is missing");
   }
 
