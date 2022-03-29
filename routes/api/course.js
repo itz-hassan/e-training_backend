@@ -1,15 +1,17 @@
 let CourseModel = require("../../models/courses.model");
 let express = require("express");
 let router = express.Router();
-const fs = require("fs");
+const path = require("path");
 const _data = require("../../lib/data");
 const logger = require("../../startup/logging");
 
 // add new course
 router.post("/", async (req, res) => {
   // validating if there is req.body
-  if (!req.body && req.files) {
-    return res.status(400).json("request body is missing");
+  if (!req.body) {
+    return res.status(400).send("Required fields missing");
+  } else if (!req.files) {
+    return res.status(400).send("course image missing");
   }
 
   const newCourse = await new CourseModel({
@@ -54,11 +56,8 @@ router.post("/", async (req, res) => {
             .save()
             .then((doc) => res.status(200).json(doc))
             .catch((err) => {
-              // fs.rmdir(`.data/${courseDir}`, { recursive: true }, (err) => {
-              //   logger.error(err);
-              // });
               _data.deleteDir(`.data/${courseDir}`, () =>
-                res.status(400).json("course code is not unique, already exits")
+                res.status(400).send("Course code is not unique, already exits")
               );
             });
         }
@@ -89,9 +88,10 @@ router.get("/", (req, res) => {
 
 router.get("/downloadCourseImage", (req, res) => {
   const dirname = req.query.fileName;
+  const mediaPath = path.join(_data.baseDir, dirname);
 
   try {
-    res.download(dirname);
+    res.sendFile(mediaPath);
   } catch (err) {
     res.json({ message: err.message });
   }
@@ -131,8 +131,6 @@ router.get("/instructor/:id/", (req, res) => {
 
 // updating a course
 router.put("/:id/", (req, res) => {
-  //var decoded = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY)
-
   CourseModel.findOneAndUpdate(
     {
       _id: req.query.id,
