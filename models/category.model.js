@@ -3,10 +3,6 @@ const Schema = mongoose.Schema;
 
 const CategorySchema = new Schema(
   {
-    no: {
-      type: Number,
-      required: true,
-    },
     categoryName: {
       type: String,
       required: true,
