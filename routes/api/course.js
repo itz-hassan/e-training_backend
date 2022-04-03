@@ -23,6 +23,7 @@ router.post("/", async (req, res) => {
     cost: req.body.cost,
     class: req.body.class,
     no_of_modules: req.body.no_of_modules,
+    tags: req.body.tags,
     announcements: [],
     liveSessions: [],
     instructor: req.body.instructor,
@@ -33,7 +34,7 @@ router.post("/", async (req, res) => {
   const courseDir = newCourse._id;
 
   // Save the media to a dir
-  _data.createDir(courseDir, (err) => {
+  _data.createDir(courseDir, _data.baseDir, (err) => {
     if (err) {
       return res.status(500).send(err);
     } else {
