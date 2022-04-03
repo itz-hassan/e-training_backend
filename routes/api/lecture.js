@@ -1,15 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const CourseModel = require("../../models/courses.model");
-// const fileUpload = require('express-fileupload');
-//mongoose
 const LectureModel = require("../../models/lectures.model");
+const path = require("path");
+const _data = require("../../lib/data");
+const getFileTypeFromMime = require("../../hooks/getFileType");
 const logger = require("../../startup/logging");
 
-/*Get videos*/
-router.get("/", function (req, res) {
+/*Get lecturesByCourseId*/
+router.get("/lecturesByCourseId/:id", function (req, res) {
   LectureModel.find({
-    course: req.query.id,
+    course: req.params.id,
   })
     .populate({ path: "course", model: "courses", select: "courseDescription" })
     .then((doc) => {
@@ -21,45 +22,98 @@ router.get("/", function (req, res) {
     .catch((err) => {
       res.status(500).json(err);
     });
-  // res.send('this is get route upload');
-  // res.render('index', {title: 'Upload file'});
 });
 
-/* POST lectures or sections or modules etc*/
-router.post("/lectureUpload", function (req, res) {
-  const newLecture = new LectureModel({
+// add new module
+router.post("/", async (req, res) => {
+  // validating if there is req.body
+  if (!req.body) {
+    return res.status(400).send("Required fields missing");
+  } else if (!req.files) {
+    return res.status(400).send("course image missing");
+  }
+
+  const course = req.body.course;
+  const moduleNo = req.body.moduleNo;
+  const newModule = new LectureModel({
     title: req.body.title,
+    mediaLink: req.body.mediaLink,
+    mediaLinkExt: req.body.mediaLinkExt,
     videoLink: req.body.videoLink,
     contentType: req.body.contentType,
     description: req.body.description,
     externalLinks: req.body.externalLinks,
     tags: req.body.tags,
-    course: req.body.course,
+    moduleNo,
+    course,
 
     capturedBy: req.body.capturedBy,
   });
-  // console.log(req.files.file);
 
-  if (req.files != undefined) {
-    console.log(req.files.file.size);
-    const imagefile = req.files.file;
-    console.log(typeof imagefile.mv);
-    // res.json(imagefile);
-    imagefile.mv(`public/assets/videos/${req.files.file.name}`);
-    if (imagefile) {
-      newLecture.videoLink = "public/assets/videos/" + imagefile.name;
+  const moduleDir = newModule._id;
+
+  // Save the media to a dir
+  _data.createDir(moduleDir, _data.baseDir + "/" + course, (err) => {
+    if (err) {
+      return res.status(500).send(err);
+    } else {
+      // save course image to the dir
+      try {
+        if (req.files) {
+          const mediaLink = req.files.mediaLink.map((media, idx) => {
+            let newFile = media;
+
+            // get the file extension
+            const mediaLinkExt = path.extname(newFile.name);
+
+            // change the file name
+            newFile.name = `module${moduleNo}${idx}${mediaLinkExt}`;
+
+            // function to get the mimetype of the file
+            const mediaLinkMime = newFile.mimetype;
+
+            //Use the mv() method to place the file in the course directory
+            const filePath = `.data/${course}/${moduleDir}/${newFile.name}`;
+            newFile.mv(filePath);
+
+            return {
+              path: filePath,
+              extName: mediaLinkExt,
+              mediaLinkMime,
+              name: newFile.name,
+              type: getFileTypeFromMime(mediaLinkMime, mediaLinkExt),
+            };
+          });
+
+          // save the media proterties arr in the document
+          newModule.mediaLink = mediaLink;
+
+          // Save the new module to database
+          newModule
+            .save()
+            .then((doc) => res.status(200).json(doc))
+            .catch((err) => {
+              _data.deleteDir(`.data/${course}/${moduleDir}`, () =>
+                res.status(400).send("Course code is not unique, already exits")
+              );
+            });
+        }
+      } catch (err) {
+        return res.status(500).send(err);
+      }
     }
-  } else {
-    console.log(newLecture.videoLink);
-    newLecture.videoLink = newLecture.youtubelink;
-  }
+  });
+});
 
-  newLecture
-    .save()
-    .then((doc) => res.status(200).json(doc))
-    .catch((err) => {
-      res.status(400).json(err);
-    });
+router.get("/downloadLectureMedia/", (req, res) => {
+  const dirname = req.query.fileName;
+  const mediaPath = path.join(_data.baseDirPath, dirname);
+
+  try {
+    res.sendFile(mediaPath);
+  } catch (err) {
+    res.json({ message: err.message });
+  }
 });
 
 router.get("/count/:id", (req, res) => {
@@ -68,26 +122,6 @@ router.get("/count/:id", (req, res) => {
     .then((no) => res.json(no))
     .catch((err) => {
       res.status(400).json("invalid course id");
-    });
-});
-
-router.post("/youtubeupload", (req, res) => {
-  //req.body
-  if (!req.body) {
-    return res.status(400).send("request body is missing");
-  }
-
-  let model = new LectureModel(req.body);
-  model
-    .save()
-    .then((doc) => {
-      if (!doc || doc.length === 0) {
-        return res.status(500).send(doc);
-      }
-      res.status(200).send(doc);
-    })
-    .catch((err) => {
-      res.status(500).json(err);
     });
 });
 
