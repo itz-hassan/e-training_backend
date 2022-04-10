@@ -21,8 +21,12 @@ const CourseSchema = new Schema(
     courseEndDate: { type: Date, required: true }, // duratoin
     cost: { type: Number, required: false }, // cost of the cost
     status: { type: Boolean, default: true }, // to enable the admin suspend the course
-    class: { type: String, required: true, enum: ["diploma", "grad", "postGrad"] }, // Dip, B.Sc, or post grad
-    syllabus: { type: Object, required: false }, // curicullum, grading
+    class: {
+      type: String,
+      required: true,
+      enum: ["diploma", "grad", "postGrad"],
+    }, // Dip, B.Sc, or post grad
+    syllabus: [Object], // curicullum, grading
     grading: { type: Object, required: false }, // grading scheme for the course
     no_of_modules: { type: Number, required: false }, // no of modules for the course
     announcements: [Object], // announcements for the course
