@@ -17,6 +17,10 @@ const studeSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: ["paid", "unpaid", "expired"],
+    default: "unpaid",
+  },
+  reference: {
+    type: String,
   },
 });
 
@@ -59,6 +63,17 @@ const userSchema = new mongoose.Schema({
   registration: {
     type: studeSchema,
   },
+  gender: {
+    type: String,
+    required: true,
+    minLength: 3,
+    maxLength: 50,
+  },
+  specialization: { type: String },
+  amount: {
+    type: Number,
+    min: 0,
+  },
 });
 
 userSchema.methods.generateAuthToken = function () {
@@ -82,13 +97,27 @@ function validateUser(user) {
     email: Joi.string().required().min(3).max(50),
     phone: Joi.string().required().min(5).max(20),
     dob: Joi.date(),
+    gender: Joi.string().required().min(3),
     address: Joi.object(),
     password: Joi.string().required().min(4).max(255),
     role: Joi.string(),
+    amount: Joi.number().min(0),
+    specialization: Joi.string(),
+    registration: Joi.object(),
   });
 
   return schema.validate(user);
 }
 
+function validatePay(paymentDetail) {
+  const schema = Joi.object({
+    amount: Joi.number().required(),
+    email: Joi.string().required(),
+    first_name: Joi.string(),
+  });
+  return schema.validate(paymentDetail);
+}
+
 exports.User = User;
 exports.validate = validateUser;
+exports.validatePay = validatePay;
