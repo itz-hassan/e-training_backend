@@ -3,6 +3,7 @@ const router = express.Router();
 // const gravatar = require("gravatar");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const Joi = require("joi");
 //Load user model for email exist checking
 const _ = require("lodash");
 const { User, validate, validatePay } = require("../../models/user.model");
@@ -61,4 +62,31 @@ router.post("/", async (req, res) => {
   res.header("x-auth-token", token).send({ token });
 });
 
+router.put("/:id", async (req, res) => {
+  const { error } = validateUpdate(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+  // const userExist = await User.findOne({ email: req.body.email });
+
+  // if (userExist)
+  //   return res.status(400).send("User with the given email already exists");
+
+  let user = await User.findById(req.params.id);
+  if (!user) return res.status(400).send("Invalid ID");
+
+  user.first_name = req.body.first_name;
+  user.last_name = req.body.last_name;
+  user.email = req.body.email;
+  user = await user.save();
+  res.send(user);
+});
+
+function validateUpdate(values) {
+  const schema = Joi.object({
+    first_name: Joi.string().required().min(3).max(50),
+    last_name: Joi.string().required().min(3).max(50),
+    email: Joi.string().required().min(3).max(50),
+  });
+
+  return schema.validate(values);
+}
 module.exports = router;
