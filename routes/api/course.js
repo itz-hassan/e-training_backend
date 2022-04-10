@@ -69,6 +69,73 @@ router.post("/", async (req, res) => {
   });
 });
 
+// add announcement
+router.route("/add/:id").post((req, res) => {
+  CourseModel.findById(req.params.id)
+    .then((CourseModel) => {
+      CourseModel.announcements.push(req.body);
+      CourseModel.save()
+        .then(() => res.json("CourseModel address added!"))
+        .catch((err) => res.status(400).json("Error:" + err));
+    })
+    .catch((err) => res.status(400).json("Error:" + err));
+});
+//updating announcements array.
+router.route("/updateAnnouncement/:id").post((req, res) => {
+  const anouncemntId = req.query.anouncemntId;
+  CourseModel.findById(req.params.id)
+    .then((doc) => {
+      const currentDoc = doc.announcements.find((el) => el.id == anouncemntId);
+      const currentDocIdx = doc.announcements.indexOf(currentDoc);
+
+      doc.announcements[currentDocIdx].activity = req.body.activity;
+      doc.announcements[currentDocIdx].date = req.body.date;
+      doc.announcements[currentDocIdx].description = req.body.description;
+      doc.markModified("announcements");
+
+      doc
+        .save()
+        .then((saves) => {
+          res.json(doc);
+        })
+        .catch((err) => res.status(400).json("Error:" + err));
+    })
+    .catch((err) => res.status(400).json("Error:" + err));
+});
+
+// add Syllabus
+router.route("/addSyllabus/:id").post((req, res) => {
+  CourseModel.findById(req.params.id)
+    .then((CourseModel) => {
+      CourseModel.syllabus.push(req.body);
+      CourseModel.save()
+        .then(() => res.json("CourseModel address added!"))
+        .catch((err) => res.status(400).json("Error:" + err));
+    })
+    .catch((err) => res.status(400).json("Error:" + err));
+});
+//updating syllabus array.
+router.route("/updateSyllabus/:id").post((req, res) => {
+  const syllabusId = req.query.syllabusId;
+  CourseModel.findById(req.params.id)
+    .then((doc) => {
+      const currentDoc = doc.syllabus.find((el) => el.id == syllabusId);
+      const currentDocIdx = doc.syllabus.indexOf(currentDoc);
+
+      doc.syllabus[currentDocIdx].title = req.body.title;
+      doc.syllabus[currentDocIdx].objectives = req.body.objectives;
+      doc.markModified("syllabus");
+
+      doc
+        .save()
+        .then((saves) => {
+          res.json(doc);
+        })
+        .catch((err) => res.status(400).json("Error:" + err));
+    })
+    .catch((err) => res.status(400).json("Error:" + err));
+});
+
 //  get all
 router.get("/", (req, res) => {
   CourseModel.find()
