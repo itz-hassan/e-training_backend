@@ -83,7 +83,28 @@ router.get("/", (req, res) => {
     })
     .catch((err) => {
       logger.log(err);
-      res.status(500).json(err);
+      res.status(400).send(err);
+    });
+});
+
+//  get by category
+router.get("/byCategory", (req, res) => {
+  const pageNumber = req.query.pageNumber;
+  const pageSize = req.query.pageSize;
+
+  CourseModel.find({
+    category: req.query.category,
+    status: true,
+  })
+    .skip((pageNumber - 1) * pageSize)
+    .limit(pageSize)
+    .populate({ path: "category", model: "category", select: "categoryName" })
+    .then((doc) => {
+      res.json(doc);
+    })
+    .catch((err) => {
+      logger.log(err);
+      res.status(400).send(err);
     });
 });
 
@@ -132,15 +153,7 @@ router.get("/instructor/:id/", (req, res) => {
 
 // updating a course
 router.put("/:id/", (req, res) => {
-  CourseModel.findOneAndUpdate(
-    {
-      _id: req.query.id,
-    },
-    req.body,
-    {
-      new: true,
-    }
-  )
+  CourseModel.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true })
     .then((doc) => {
       res.json(doc);
     })
