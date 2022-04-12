@@ -21,6 +21,13 @@ router.post("/", (req, res) => {
       res.status(500).json(err);
     });
 });
+// find by id
+router.route("/:id/").get((req, res) => {
+  catmodel
+    .findOne({ _id: req.params.id })
+    .then((doc) => res.json(doc))
+    .catch((err) => res.status(400).json("Error: " + err));
+});
 
 router.get("/", (req, res) => {
   catmodel
@@ -33,15 +40,16 @@ router.get("/", (req, res) => {
     });
 });
 
-router.put("/category/", (req, res) => {
+router.put("/:id/", (req, res) => {
   catmodel
-    .findOneAndUpdate(
+    .updateOne(
       {
-        _id: req.query.id,
+        _id: req.params.id,
       },
-      req.body,
       {
-        new: true,
+        $set: {
+          categoryName: req.body.categoryName,
+        },
       }
     )
     .then((doc) => {

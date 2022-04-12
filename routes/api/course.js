@@ -24,6 +24,7 @@ router.post("/", async (req, res) => {
     class: req.body.class,
     no_of_modules: req.body.no_of_modules,
     tags: req.body.tags,
+    objectives: req.body.objectives,
     announcements: [],
     liveSessions: [],
     instructor: req.body.instructor,
@@ -69,6 +70,73 @@ router.post("/", async (req, res) => {
   });
 });
 
+// add announcement
+router.route("/add/:id").post((req, res) => {
+  CourseModel.findById(req.params.id)
+    .then((CourseModel) => {
+      CourseModel.announcements.push(req.body);
+      CourseModel.save()
+        .then(() => res.json("CourseModel address added!"))
+        .catch((err) => res.status(400).json("Error:" + err));
+    })
+    .catch((err) => res.status(400).json("Error:" + err));
+});
+//updating announcements array.
+router.route("/updateAnnouncement/:id").post((req, res) => {
+  const anouncemntId = req.query.anouncemntId;
+  CourseModel.findById(req.params.id)
+    .then((doc) => {
+      const currentDoc = doc.announcements.find((el) => el.id == anouncemntId);
+      const currentDocIdx = doc.announcements.indexOf(currentDoc);
+
+      doc.announcements[currentDocIdx].activity = req.body.activity;
+      doc.announcements[currentDocIdx].date = req.body.date;
+      doc.announcements[currentDocIdx].description = req.body.description;
+      doc.markModified("announcements");
+
+      doc
+        .save()
+        .then((saves) => {
+          res.json(doc);
+        })
+        .catch((err) => res.status(400).json("Error:" + err));
+    })
+    .catch((err) => res.status(400).json("Error:" + err));
+});
+
+// add Syllabus
+router.route("/addSyllabus/:id").post((req, res) => {
+  CourseModel.findById(req.params.id)
+    .then((CourseModel) => {
+      CourseModel.syllabus.push(req.body);
+      CourseModel.save()
+        .then(() => res.json("CourseModel address added!"))
+        .catch((err) => res.status(400).json("Error:" + err));
+    })
+    .catch((err) => res.status(400).json("Error:" + err));
+});
+//updating syllabus array.
+router.route("/updateSyllabus/:id").post((req, res) => {
+  const syllabusId = req.query.syllabusId;
+  CourseModel.findById(req.params.id)
+    .then((doc) => {
+      const currentDoc = doc.syllabus.find((el) => el.id == syllabusId);
+      const currentDocIdx = doc.syllabus.indexOf(currentDoc);
+
+      doc.syllabus[currentDocIdx].title = req.body.title;
+      doc.syllabus[currentDocIdx].objectives = req.body.objectives;
+      doc.markModified("syllabus");
+
+      doc
+        .save()
+        .then((saves) => {
+          res.json(doc);
+        })
+        .catch((err) => res.status(400).json("Error:" + err));
+    })
+    .catch((err) => res.status(400).json("Error:" + err));
+});
+
 //  get all
 router.get("/", (req, res) => {
   CourseModel.find()
@@ -83,7 +151,28 @@ router.get("/", (req, res) => {
     })
     .catch((err) => {
       logger.log(err);
-      res.status(500).json(err);
+      res.status(400).send(err);
+    });
+});
+
+//  get by category
+router.get("/byCategory", (req, res) => {
+  const pageNumber = req.query.pageNumber;
+  const pageSize = req.query.pageSize;
+
+  CourseModel.find({
+    category: req.query.category,
+    // status: true,
+  })
+    .skip((pageNumber - 1) * pageSize)
+    .limit(pageSize)
+    .populate({ path: "category", model: "category", select: "categoryName" })
+    .then((doc) => {
+      res.json(doc);
+    })
+    .catch((err) => {
+      logger.log(err);
+      res.status(400).send(err);
     });
 });
 
@@ -132,15 +221,7 @@ router.get("/instructor/:id/", (req, res) => {
 
 // updating a course
 router.put("/:id/", (req, res) => {
-  CourseModel.findOneAndUpdate(
-    {
-      _id: req.query.id,
-    },
-    req.body,
-    {
-      new: true,
-    }
-  )
+  CourseModel.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true })
     .then((doc) => {
       res.json(doc);
     })
