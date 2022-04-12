@@ -24,6 +24,7 @@ router.post("/", async (req, res) => {
     class: req.body.class,
     no_of_modules: req.body.no_of_modules,
     tags: req.body.tags,
+    objectives: req.body.objectives,
     announcements: [],
     liveSessions: [],
     instructor: req.body.instructor,
@@ -161,7 +162,7 @@ router.get("/byCategory", (req, res) => {
 
   CourseModel.find({
     category: req.query.category,
-    status: true,
+    // status: true,
   })
     .skip((pageNumber - 1) * pageSize)
     .limit(pageSize)
