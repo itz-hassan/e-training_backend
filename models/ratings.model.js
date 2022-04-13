@@ -7,7 +7,8 @@ const courseRatingsSchema = new Schema(
     feedBack: {
       studentID: { type: Schema.Types.ObjectId, ref: "User" },
       rating: { type: Number, required: true },
-      review: { type: String, required: true },
+      comment: { type: String },
+      suggestion: { type: String },
     },
   },
   { timestamps: true }
