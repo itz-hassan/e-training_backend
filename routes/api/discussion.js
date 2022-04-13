@@ -70,6 +70,25 @@ router.get("/byCourse/", (req, res) => {
     });
 });
 
+// updating a course
+router.put("/likes/", (req, res) => {
+  DiscussModel.findOneAndUpdate(
+    { _id: req.body.id },
+    {
+      $inc: {
+        likes: req.body.likes,
+      },
+    },
+    { new: true }
+  )
+    .then((doc) => {
+      res.json(doc);
+    })
+    .catch((err) => {
+      res.status(500).json(err);
+    });
+});
+
 router.put("/:id/", (req, res) => {
   DiscussModel.updateOne(
     {

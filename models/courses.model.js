@@ -27,6 +27,7 @@ const CourseSchema = new Schema(
     no_of_modules: { type: Number, required: false }, // no of modules for the course
     announcements: [Object], // announcements for the course
     liveSessions: { type: Array, required: false }, // office hours
+    objectives: [String], //what the students will learn
     tags: [String], //tags for filter regarding courses with associations
     instructor: { type: Schema.Types.ObjectId, ref: "User" },
     category: { type: Schema.Types.ObjectId, ref: "Category" },

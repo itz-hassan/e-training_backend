@@ -24,6 +24,7 @@ router.post("/", async (req, res) => {
     class: req.body.class,
     no_of_modules: req.body.no_of_modules,
     tags: req.body.tags,
+    objectives: req.body.objectives,
     announcements: [],
     liveSessions: [],
     instructor: req.body.instructor,
@@ -163,6 +164,8 @@ router.get("/byCategory", (req, res) => {
     category: req.query.category,
     status: true,
   })
+    // .where({ course: !["625435c1d055f528c7a3571f", "625435c1d055f528c7a3571f"] })
+    // .deleteMany({ course: ["625435c1d055f528c7a3571f"] }, { limit: 1 })
     .skip((pageNumber - 1) * pageSize)
     .limit(pageSize)
     .populate({ path: "category", model: "category", select: "categoryName" })
@@ -170,7 +173,7 @@ router.get("/byCategory", (req, res) => {
       res.json(doc);
     })
     .catch((err) => {
-      logger.log(err);
+      console.log(err);
       res.status(400).send(err);
     });
 });
