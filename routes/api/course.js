@@ -81,6 +81,7 @@ router.route("/add/:id").post((req, res) => {
     })
     .catch((err) => res.status(400).json("Error:" + err));
 });
+
 //updating announcements array.
 router.route("/updateAnnouncement/:id").post((req, res) => {
   const anouncemntId = req.query.anouncemntId;
@@ -115,6 +116,7 @@ router.route("/addSyllabus/:id").post((req, res) => {
     })
     .catch((err) => res.status(400).json("Error:" + err));
 });
+
 //updating syllabus array.
 router.route("/updateSyllabus/:id").post((req, res) => {
   const syllabusId = req.query.syllabusId;
@@ -144,7 +146,7 @@ router.get("/", (req, res) => {
     .populate({
       path: "instructor",
       model: "User",
-      select: ["role", "email", "first_name", "last_name"],
+      select: ["role", "email", "first_name", "last_name", "name"],
     })
     .then((doc) => {
       res.json(doc);
@@ -196,7 +198,7 @@ router.route("/:id/").get((req, res) => {
     .populate({
       path: "instructor",
       model: "User",
-      select: ["role", "email", "first_name", "last_name"],
+      select: ["role", "email", "first_name", "last_name", "name"],
     })
     .then((doc) => res.json(doc))
     .catch((err) => res.status(400).json("Error: " + err));
@@ -211,7 +213,7 @@ router.get("/instructor/:id/", (req, res) => {
     .populate({
       path: "instructor",
       model: "User",
-      select: ["role", "email", "first_name", "last_name"],
+      select: ["role", "email", "first_name", "last_name", "name"],
     })
     .then((doc) => {
       res.json(doc);
