@@ -162,8 +162,10 @@ router.get("/byCategory", (req, res) => {
 
   CourseModel.find({
     category: req.query.category,
-    // status: true,
+    status: true,
   })
+    // .where({ course: !["625435c1d055f528c7a3571f", "625435c1d055f528c7a3571f"] })
+    // .deleteMany({ course: ["625435c1d055f528c7a3571f"] }, { limit: 1 })
     .skip((pageNumber - 1) * pageSize)
     .limit(pageSize)
     .populate({ path: "category", model: "category", select: "categoryName" })
@@ -171,7 +173,7 @@ router.get("/byCategory", (req, res) => {
       res.json(doc);
     })
     .catch((err) => {
-      logger.log(err);
+      console.log(err);
       res.status(400).send(err);
     });
 });
