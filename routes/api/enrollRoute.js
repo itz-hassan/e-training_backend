@@ -64,10 +64,10 @@ router.get("/enrollmentbystudent", (req, res) => {
     });
 });
 
-router.get("/checkenrollment", (req, res) => {
+router.get("/checkEnrollment", (req, res) => {
   EnrollModel.findOne({
-    student: req.query.id,
-    course: req.query.courseid,
+    student: req.query.student,
+    course: req.query.course,
   })
     .populate({ path: "course", model: "courses", select: "courseName" })
     .then((doc) => {
@@ -92,6 +92,25 @@ router.post("/enrollbystudent/add", (req, res) => {
         return res.status(500).send(doc);
       }
       res.status(200).send(doc);
+    })
+    .catch((err) => {
+      res.status(500).json(err);
+    });
+});
+
+// updating progress
+router.put("/progress/", (req, res) => {
+  EnrollModel.findOneAndUpdate(
+    { _id: req.body.id },
+    {
+      $set: {
+        modules: req.body.modulesDB,
+      },
+    },
+    { new: true }
+  )
+    .then((doc) => {
+      res.json(doc);
     })
     .catch((err) => {
       res.status(500).json(err);

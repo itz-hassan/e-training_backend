@@ -44,6 +44,7 @@ router.post("/", async (req, res) => {
     description: req.body.description,
     externalLinks: req.body.externalLinks,
     tags: req.body.tags,
+    objectives: req.body.objectives,
     moduleNo,
     course,
 

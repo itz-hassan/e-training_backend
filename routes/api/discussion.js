@@ -61,6 +61,11 @@ router.get("/byCourse/", (req, res) => {
       select: ["role", "email", "first_name", "last_name"],
     })
     .populate({ path: "course", model: "courses" })
+    .populate({
+      path: "comments.user",
+      model: "User",
+      select: ["role", "email", "first_name", "last_name"],
+    })
     .then((doc) => {
       res.json(doc);
     })
@@ -70,13 +75,23 @@ router.get("/byCourse/", (req, res) => {
     });
 });
 
-// updating a course
+// counting the #of discussions per course
+router.get("/count/", (req, res) => {
+  DiscussModel.findOne({ course: req.query.course })
+    .count()
+    .then((no) => res.json(no))
+    .catch((err) => {
+      res.status(400).json("invalid course id");
+    });
+});
+
+// updating likes
 router.put("/likes/", (req, res) => {
   DiscussModel.findOneAndUpdate(
     { _id: req.body.id },
     {
-      $inc: {
-        likes: req.body.likes,
+      $set: {
+        likes: req.body.likesDB,
       },
     },
     { new: true }
@@ -88,6 +103,70 @@ router.put("/likes/", (req, res) => {
       res.status(500).json(err);
     });
 });
+
+// updating comment
+router.put("/comments/", (req, res) => {
+  const id = req.body.id;
+  DiscussModel.findById(id)
+    .then((doc) => {
+      doc.comments.push({
+        user: req.body.user,
+        likes: [],
+        comment: req.body.comment,
+        date: req.body.date,
+      });
+
+      doc.save(function (err) {
+        if (err) return res.status(400).json("Error: " + err);
+        return res.json(doc);
+      });
+    })
+    .catch((err) => res.status(500).send(err));
+  // DiscussModel.findOneAndUpdate(
+  //   { _id: req.body.id },
+  //   {
+  //     $set: {
+  //       comments: [
+  //         ...comments,
+
+  //         {
+  //           user: req.body.user,
+  //           likes: [],
+  //           comment: req.body.comment,
+  //           date: req.body.date,
+  //         },
+  //         ,
+  //       ],
+  //     },
+  //   },
+  //   { new: true }
+  // )
+  //   .then((doc) => {
+  //     res.json(doc);
+  //   })
+  //   .catch((err) => {
+  //     res.status(500).json(err);
+  //   });
+});
+
+// updating a course
+// router.put("/likes/", (req, res) => {
+//   DiscussModel.findOneAndUpdate(
+//     { _id: req.body.id },
+//     {
+//       $inc: {
+//         likes: req.body.likes,
+//       },
+//     },
+//     { new: true }
+//   )
+//     .then((doc) => {
+//       res.json(doc);
+//     })
+//     .catch((err) => {
+//       res.status(500).json(err);
+//     });
+// });
 
 router.put("/:id/", (req, res) => {
   DiscussModel.updateOne(

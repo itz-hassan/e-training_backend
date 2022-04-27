@@ -25,6 +25,8 @@ const EnrollmentSchema = new Schema(
     quizes: [Object], //
     grading: [Object], // for all the grading
     progress: { type: Number, default: 0 }, // for the students progress
+    modules: [Object], // for the students progress, to know the module the user stopped
+    // module: { type: Number, default: 1 }, // for the students progress, to know the module the user stopped
     certification: { type: Object }, // for the students certification
     licence: { type: Object }, // for the students licence
     approved: {
