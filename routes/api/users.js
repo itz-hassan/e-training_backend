@@ -12,6 +12,15 @@ const { initializePay, verifyPayment } = require("./paystack");
 // @route  GET   api/users/
 // @desc   Register users route
 // @access Public
+router.get("/student", (req, res) => {
+  User.find()
+    .then((doc) => {
+      res.json(doc);
+    })
+    .catch((err) => {
+      res.status(500).json(err);
+    });
+});
 
 router.get("/verifyPay", async (req, res) => {
   if (!req.query.reference) return res.status(400).send("no refernce");

@@ -34,18 +34,20 @@ router.post("/add", (req, res) => {
     });
 });
 
-router.get("/enrollments", (req, res, next) => {
+router.get("/enrollments", (req, res) => {
   EnrollModel.find()
-    .populate({ path: "student", model: "users" })
-    .populate({ path: "course", model: "courses", select: "courseName" })
-
-    .exec(function (err, results) {
-      if (err) {
-        return next(err);
-      }
-      if (results) {
-        return res.json(results);
-      }
+    .populate({
+      path: "student",
+      model: "User",
+      select: ["role", "email", "first_name", "last_name", "name"],
+    })
+    .populate({ path: "course", model: "courses" })
+    .then((doc) => {
+      res.json(doc);
+    })
+    .catch((err) => {
+      logger.log(err);
+      res.status(400).send(err);
     });
 });
 
