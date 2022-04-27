@@ -7,10 +7,7 @@ const commetSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
-  likes: {
-    type: Number,
-    default: 0,
-  },
+  likes: [Object],
   comment: {
     type: String,
     required: true,
@@ -25,7 +22,8 @@ const DiscussionSchema = new Schema(
       type: String,
       required: true,
     },
-    likes: { type: Number, default: 0 },
+    likes: [Object],
+    // likes: { type: Number, default: 0 },
     followers: [String],
     comments: {
       type: [commetSchema],

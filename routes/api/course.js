@@ -141,7 +141,7 @@ router.route("/updateSyllabus/:id").post((req, res) => {
 
 //  get all
 router.get("/", (req, res) => {
-  CourseModel.find()
+  CourseModel.find({ status: true })
     .populate({ path: "category", model: "category", select: "categoryName" })
     .populate({
       path: "instructor",
@@ -206,9 +206,14 @@ router.route("/:id/").get((req, res) => {
 
 //get courses by instructor id
 router.get("/instructor/:id/", (req, res) => {
+  const pageNumber = req.query.pageNumber;
+  const pageSize = req.query.pageSize;
+
   CourseModel.find({
     instructor: req.params.id,
   })
+    .skip((pageNumber - 1) * pageSize)
+    .limit(pageSize)
     .populate({ path: "category", model: "category", select: "categoryName" })
     .populate({
       path: "instructor",
@@ -219,7 +224,19 @@ router.get("/instructor/:id/", (req, res) => {
       res.json(doc);
     })
     .catch((err) => {
-      res.status(500).json(err);
+      res.status(400).send(err);
+    });
+});
+
+// counting the #of courses per instructor id
+router.get("/instructor/count/:id", (req, res) => {
+  CourseModel.find({
+    instructor: req.params.id,
+  })
+    .count()
+    .then((no) => res.json(no))
+    .catch((err) => {
+      res.status(400).json("invalid course id");
     });
 });
 

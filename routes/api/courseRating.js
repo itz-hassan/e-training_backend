@@ -54,10 +54,8 @@ router.get("/", (req, res) => {
 
 //  get by course
 router.get("/byCourse", (req, res) => {
-  console.log("hi");
   const pageNumber = req.query.pageNumber;
   const pageSize = req.query.pageSize;
-  console.log(req.query);
   RateModel.find({
     course: req.query.course,
     status: true,
@@ -72,7 +70,6 @@ router.get("/byCourse", (req, res) => {
     // .populate({ path: "course", model: "courses" })
     .then((doc) => {
       res.json(doc);
-      console.log(doc);
     })
     .catch((err) => {
       logger.log(err);

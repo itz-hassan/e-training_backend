@@ -96,7 +96,7 @@ router.post("/enrollbystudent/add", (req, res) => {
     });
 });
 
-// updating a course
+// updating progress
 router.put("/progress/", (req, res) => {
   EnrollModel.findOneAndUpdate(
     { _id: req.body.id },
@@ -108,7 +108,6 @@ router.put("/progress/", (req, res) => {
     { new: true }
   )
     .then((doc) => {
-      console.log(doc.modules);
       res.json(doc);
     })
     .catch((err) => {
