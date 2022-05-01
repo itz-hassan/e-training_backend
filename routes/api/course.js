@@ -191,6 +191,36 @@ router.get("/downloadCourseImage", (req, res) => {
   }
 });
 
+router.put("/changeCourseImage/:id", (req, res) => {
+  const dirname = req.query.fileName;
+  const courseDir = req.params.id;
+
+  _data.delete(dirname, (err) => {
+    if (err) console.log(err);
+
+    try {
+      if (!req.files) {
+        res.send({
+          status: false,
+          message: "No file uploaded",
+        });
+      } else {
+        // change the file name
+        let newFile = req.files.courseImage;
+        newFile.name = "courseImage.jpeg";
+
+        //Use the mv() method to place the file in the course directory
+        const filePath = `.data/${courseDir}/${newFile.name}`;
+        newFile.mv(filePath);
+
+        res.send("File Uploaded!");
+      }
+    } catch (err) {
+      res.status(500).send(err);
+    }
+  });
+});
+
 // find by id
 router.route("/:id/").get((req, res) => {
   CourseModel.findOne({ _id: req.params.id })

@@ -24,6 +24,18 @@ router.get("/lecturesByCourseId/:id", function (req, res) {
     });
 });
 
+/*Get lectures By ID*/
+router.get("/lectureById/:id", function (req, res) {
+  LectureModel.findById(req.params.id)
+    .populate({ path: "course", model: "courses" })
+    .then((doc) => {
+      res.json(doc);
+    })
+    .catch((err) => {
+      res.status(500).json(err);
+    });
+});
+
 // add new module
 router.post("/", async (req, res) => {
   // validating if there is req.body
@@ -123,6 +135,17 @@ router.get("/count/:id", (req, res) => {
     .then((no) => res.json(no))
     .catch((err) => {
       res.status(400).json("invalid course id");
+    });
+});
+
+// updating a module
+router.put("/:id/", (req, res) => {
+  LectureModel.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true })
+    .then((doc) => {
+      res.json(doc);
+    })
+    .catch((err) => {
+      res.status(500).json(err);
     });
 });
 
