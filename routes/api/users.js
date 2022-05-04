@@ -2,8 +2,9 @@ const express = require("express");
 const router = express.Router();
 // const gravatar = require("gravatar");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const Joi = require("joi");
+const _data = require("../../lib/data");
+const path = require("path");
 //Load user model for email exist checking
 const _ = require("lodash");
 const { User, validate, validatePay } = require("../../models/user.model");
@@ -85,8 +86,42 @@ router.put("/:id", async (req, res) => {
   user.first_name = req.body.first_name;
   user.last_name = req.body.last_name;
   user.email = req.body.email;
-  user = await user.save();
+
+  if (req.files) {
+    try {
+      // change the file name
+      let newFile = req.files.pic;
+      newFile.name = `${user._id}.jpeg`;
+
+      //Use the mv() method to place the file in the course directory
+      const filePath = `assets/${newFile.name}`;
+      // console.log(filePath);
+      newFile.mv(filePath);
+
+      // save the courseImage path in the document
+      user.pic = filePath;
+
+      // Save the new course data
+      await user.save();
+      res.send(user);
+    } catch (error) {
+      console.log(error);
+    }
+  } else {
+    user = await user.save();
+  }
   res.send(user);
+});
+
+router.get("/viewProfilepic", (req, res) => {
+  const dirname = req.query.fileName;
+  const mediaPath = path.join(path.join(__dirname, "../../"), dirname);
+  // console.log(mediaPath);
+  try {
+    res.sendFile(mediaPath);
+  } catch (err) {
+    res.send({ message: err.message });
+  }
 });
 
 router.post("/verifyPassword/:id", async (req, res) => {
@@ -112,6 +147,7 @@ function validateUpdate(values) {
     first_name: Joi.string().required().min(3).max(50),
     last_name: Joi.string().required().min(3).max(50),
     email: Joi.string().required().min(3).max(50),
+    pic: Joi.string(),
   });
 
   return schema.validate(values);

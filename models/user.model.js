@@ -74,6 +74,10 @@ const userSchema = new mongoose.Schema({
     type: Number,
     min: 0,
   },
+  pic: {
+    type: String,
+    default: "assets/default.svg",
+  },
 });
 
 userSchema.methods.generateAuthToken = function () {

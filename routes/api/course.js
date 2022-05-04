@@ -141,7 +141,10 @@ router.route("/updateSyllabus/:id").post((req, res) => {
 
 //  get all
 router.get("/", (req, res) => {
-  CourseModel.find({ status: true })
+  CourseModel
+    .find
+    // { status: true }
+    ()
     .populate({ path: "category", model: "category", select: "categoryName" })
     .populate({
       path: "instructor",
