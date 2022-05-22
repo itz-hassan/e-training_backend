@@ -58,7 +58,7 @@ router.get("/byCourse/", (req, res) => {
     .populate({
       path: "student",
       model: "User",
-      select: ["role", "email", "first_name", "last_name"],
+      // select: ["role", "email", "first_name", "last_name"],
     })
     .populate({ path: "course", model: "courses" })
     .populate({

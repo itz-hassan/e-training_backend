@@ -118,6 +118,7 @@ router.post("/", async (req, res) => {
   });
 });
 
+// downloading Module Media
 router.get("/downloadLectureMedia/", (req, res) => {
   const dirname = req.query.fileName;
   const mediaPath = path.join(_data.baseDirPath, dirname);
@@ -129,6 +130,7 @@ router.get("/downloadLectureMedia/", (req, res) => {
   }
 });
 
+// counting the no of module for a course
 router.get("/count/:id", (req, res) => {
   LectureModel.findOne({ course: req.params.id })
     .count()
@@ -146,6 +148,69 @@ router.put("/:id/", (req, res) => {
     })
     .catch((err) => {
       res.status(500).json(err);
+    });
+});
+
+router.put("/changeLectureMaterials/:id", (req, res) => {
+  if (!req.files) {
+    return res.status(400).send("No files uploaded");
+  }
+
+  LectureModel.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true })
+    .then(async (doc) => {
+      const course = doc.course;
+      const moduleDir = doc._id;
+
+      try {
+        const deletedMediaLink = await doc.mediaLink.map((media) => {
+          const dirname = media.path;
+
+          _data.delete(dirname, (err) => {
+            if (err) console.log(err);
+          });
+        });
+
+        const mediaLink = await req.files.mediaLink.map((media, idx) => {
+          let newFile = media;
+
+          // get the file extension
+          const mediaLinkExt = path.extname(newFile.name);
+
+          // change the file name
+          newFile.name = `module${doc.moduleNo}${idx}${mediaLinkExt}`;
+
+          // function to get the mimetype of the file
+          const mediaLinkMime = newFile.mimetype;
+
+          //Use the mv() method to place the file in the course directory
+          const filePath = `.data/${course}/${moduleDir}/${newFile.name}`;
+          newFile.mv(filePath);
+
+          return {
+            path: filePath,
+            extName: mediaLinkExt,
+            mediaLinkMime,
+            name: newFile.name,
+            type: getFileTypeFromMime(mediaLinkMime, mediaLinkExt),
+          };
+        });
+
+        doc.mediaLink = mediaLink;
+
+        doc
+          .save()
+          .then((doc) => res.status(200).json(doc))
+          .catch((err) => {
+            return res
+              .status(500)
+              .send("Could not update module materials. Try again later");
+          });
+      } catch (err) {
+        return res.status(500).send(err);
+      }
+    })
+    .catch((err) => {
+      res.status(400).send(err);
     });
 });
 
