@@ -23,6 +23,10 @@ router.get("/student", (req, res) => {
     });
 });
 
+router.get("/", async (req, res) => {
+  const user = await User.find().select("-password");
+  res.send(user);
+});
 router.get("/verifyPay", async (req, res) => {
   if (!req.query.reference) return res.status(400).send("no refernce");
   const result = await verifyPayment(req.query.reference);
@@ -30,7 +34,7 @@ router.get("/verifyPay", async (req, res) => {
 });
 
 router.post("/pay", async (req, res) => {
-  console.log("Paying...", req.body);
+  // console.log("Paying...", req.body);
   const { error } = validatePay(req.body);
   if (error) return res.status(400).send(error.details[0].message);
   const result = await initializePay(req.body);
@@ -42,7 +46,7 @@ router.post("/pay", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
   const user = await User.findOne({ email: req.body.email });

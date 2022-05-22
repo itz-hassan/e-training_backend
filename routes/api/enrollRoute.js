@@ -55,7 +55,14 @@ router.get("/enrollmentbystudent", (req, res) => {
   EnrollModel.find({
     student: req.query.id,
   })
-    .populate({ path: "course", model: "courses" })
+    .populate({
+      path: "course",
+      model: "courses",
+      populate: {
+        path: "category",
+        model: "category",
+      },
+    })
     .then((doc) => {
       res.json(doc);
     })
